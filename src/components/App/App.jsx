@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 
 import FeedbackOptions from 'components/FeedbackOptions';
 import { Box } from 'components/Box';
@@ -12,8 +12,6 @@ export const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-  const [total, setTotal] = useState(0);
-  const [posetivePercentage, setPosetivePercentage] = useState(0);
 
   const fidbacks = useMemo(() => {
     return { good, neutral, bad };
@@ -21,25 +19,22 @@ export const App = () => {
 
   const buttons = Object.keys(fidbacks);
 
-  useEffect(() => {
-    const countTotalFeedback = () => {
-      const feedbackValues = Object.values(fidbacks);
-      return feedbackValues.reduce(
-        (acc, feedbackValue) => acc + feedbackValue,
-        0
-      );
-    };
+  const countTotalFeedback = () => {
+    const feedbackValues = Object.values(fidbacks);
+    return feedbackValues.reduce(
+      (acc, feedbackValue) => acc + feedbackValue,
+      0
+    );
+  };
 
-    const countPositiveFeedbackPercentage = (goodFeedback, totalFeedback) => {
-      if (!totalFeedback) {
-        return 0;
-      }
-      return Math.round((goodFeedback * 100) / totalFeedback);
-    };
+  const total = countTotalFeedback();
 
-    setTotal(countTotalFeedback());
-    setPosetivePercentage(countPositiveFeedbackPercentage(good, total));
-  }, [fidbacks, good, total]);
+  const countPositiveFeedbackPercentage = () => {
+    if (!total) {
+      return 0;
+    }
+    return Math.round((good * 100) / total);
+  };
 
   const increaceFeedaback = button => {
     console.log('button :>> ', button);
@@ -89,7 +84,7 @@ export const App = () => {
                 neutral={neutral}
                 bad={bad}
                 total={total}
-                positivePercentage={posetivePercentage}
+                positivePercentage={countPositiveFeedbackPercentage()}
               />
             ) : (
               <Notification message="There is no feedback yet..." />
